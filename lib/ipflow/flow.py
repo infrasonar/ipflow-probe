@@ -1,17 +1,17 @@
 import struct
 from ipaddress import IPv4Address, IPv4Network, IPv6Address, IPv6Network
-from typing import Iterator, Union
+from typing import Dict, Iterator, Tuple, Union
 from .field_type import FIELD_TYPE_FUNC
 from .field_type import FieldType
+from .template import DataTemplate
 
 
-# negative values don't collide with normal template ID's (uint)
-V5_TEMPLATE_ID = -1
+V5_TEMPLATE_KEY = None, None, None
 V5_TEMPLATE_FMT = '>4s4s4sHHLLLLHH2sBBB3s4s'
 V5_TEMPLATE_SIZE = struct.calcsize(V5_TEMPLATE_FMT)
 
-flowset_templates = {
-    V5_TEMPLATE_ID: (
+flowset_templates: Dict[Tuple[str, int, int], DataTemplate] = {
+    V5_TEMPLATE_KEY: DataTemplate(
         V5_TEMPLATE_FMT,
         V5_TEMPLATE_SIZE,
         [],
@@ -34,22 +34,23 @@ flowset_templates = {
             None,  # 3 byte padding
             None,  # reserved
         ],
+        0,  # uptime not used for v5 packets
     )
 }
 
 
 class Flow:
     __slots__ = (
-        'flowset_id',
+        'template',
         'values',
     )
 
-    def __init__(self, flowset_id, values):
-        self.flowset_id = flowset_id
+    def __init__(self, template: DataTemplate, values: Tuple[bytes]):
+        self.template = template
         self.values = values
 
     def serialize(self) -> dict:
-        _, _, fields, _ = flowset_templates[self.flowset_id]
+        fields = self.template.fields
         return {
             f.name: FIELD_TYPE_FUNC.get(f.id, lambda val: val)(val)
             for f, val in zip(fields, self.values)
@@ -59,7 +60,7 @@ class Flow:
         self,
         address: Union[IPv4Address, IPv6Address]
     ) -> Iterator[Union[IPv4Address, IPv6Address]]:
-        _, _, _, fields_idx = flowset_templates[self.flowset_id]
+        fields_idx = self.template.index
         for ft in (
             FieldType.IPV4_DST_ADDR,
             FieldType.IPV4_NEXT_HOP,
@@ -84,7 +85,7 @@ class Flow:
         self,
         network: Union[IPv4Network, IPv6Network]
     ) -> Iterator[Union[IPv4Network, IPv6Network]]:
-        _, _, _, fields_idx = flowset_templates[self.flowset_id]
+        fields_idx = self.template.index
         for ft in (
             FieldType.IPV4_DST_ADDR,
             FieldType.IPV4_NEXT_HOP,

@@ -7,7 +7,7 @@ HEADER_FMT = '>HHLLL'
 HEADER_SIZE = struct.calcsize(HEADER_FMT)
 
 
-def on_packet_v10(line: bytes):
+def on_packet_v10(line: bytes, source: str):
     (
         version,
         message_length,
@@ -30,13 +30,15 @@ def on_packet_v10(line: bytes):
 
         if flowset_id == 2:
             try:
-                on_flowset_template(flowset)
+                on_flowset_template(flowset, source, observation_domain_id,
+                                    export_time)
             except Exception:
                 logging.error('failed to parse FlowSet template')
                 break
         elif flowset_id > 255:
             try:
-                for flow in on_flowset(flowset, flowset_id):
+                for flow in on_flowset(flowset, flowset_id, source,
+                                       observation_domain_id):
                     yield flow
             except Exception:
                 logging.warning('failed to parse FlowSet')

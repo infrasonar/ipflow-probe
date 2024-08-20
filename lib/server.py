@@ -40,7 +40,7 @@ class ServerProtocol(asyncio.Protocol):
         }[version]
         # parse every packet regardless of any subscriptions
         # whe need the template flowsets
-        for flow in parser(data):
+        for flow in parser(data, addr[0]):
             for subs in subscriptions.values():
                 subs.on_flow(flow)
 

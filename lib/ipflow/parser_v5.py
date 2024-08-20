@@ -1,7 +1,7 @@
 import logging
 import struct
 from .flowset import on_flowset
-from .flow import V5_TEMPLATE_ID, V5_TEMPLATE_SIZE
+from .flow import V5_TEMPLATE_KEY, V5_TEMPLATE_SIZE
 
 
 HEADER_FMT = '>HHLLLLBBH'
@@ -28,7 +28,7 @@ def on_packet_v5(line: bytes):
         pos += flowset_size
 
         try:
-            for flow in on_flowset(flowset, V5_TEMPLATE_ID):
+            for flow in on_flowset(flowset, *V5_TEMPLATE_KEY):
                 yield flow
         except Exception:
             logging.warning('failed to parse FlowSet')

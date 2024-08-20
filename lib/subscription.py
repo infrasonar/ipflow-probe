@@ -13,11 +13,13 @@ class Subscription(NamedTuple):
     def make(cls, address: Union[IPv4Address, IPv6Address]):
         self = cls(
             address=address,
-            result={},
+            result=[],
             timestamp=int(time.time()),
         )
         return self
 
     def on_flow(self, flow: Flow):
-        if flow.test_address(self.address):
-            self.append(flow)
+        # compare the raw address bytes against all parsed fields regardless of
+        # field type
+        if self.address.packed in flow.values:
+            self.result.append(flow)
