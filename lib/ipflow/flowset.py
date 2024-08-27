@@ -6,13 +6,14 @@ from .template import DataTemplate
 
 def on_flowset_template(
     line: bytes,
+    pos: int,
+    pos_end: int,
     source: str,
     source_id: int,
     source_uptime: int,
 ):
-    pos = 0
-    while pos < len(line):
-        template_id, field_count = struct.unpack('>HH', line[pos:pos+4])
+    while pos < pos_end:
+        template_id, field_count = struct.unpack_from('>HH', line, pos)
         # rfc 3954 5.1
         # NetFlow Collectors SHOULD use the combination of the source IP
         # address and the Source ID field to separate different export
@@ -24,7 +25,7 @@ def on_flowset_template(
             continue
 
         fields = [
-            Field(*struct.unpack('>HH', line[i:i+4]))
+            Field(*struct.unpack_from('>HH', line, i))
             for i in range(pos + 4, pos + 4 + field_count * 4, 4)
         ]
 
@@ -40,6 +41,8 @@ def on_flowset_template(
 
 def on_flowset(
     line: bytes,
+    pos: int,
+    pos_end: int,
     flowset_id: int,
     source: str,
     source_id: int,
@@ -47,7 +50,6 @@ def on_flowset(
     key = source, source_id, flowset_id
     template = flowset_templates.get(key)
     if template:
-        fmt = template._fmt
-        pad = len(line) % template.length
-        for values in struct.iter_unpack(fmt, line[:-pad] if pad else line):
-            yield Flow(template, values)
+        # assume 3 padding
+        for i in range(pos, pos_end - 3, template.length):
+            yield Flow(template, template._fmt.unpack_from(line, i))

@@ -5,7 +5,7 @@ from .ipflow.flow import Flow
 
 
 class Subscription(NamedTuple):
-    address: Union[IPv4Address, IPv4Address]
+    address: Union[IPv4Address, IPv6Address]
     result: List[Flow]
     timestamp: int
 

@@ -1,3 +1,4 @@
+import struct
 from typing import List
 from .field import Field
 
@@ -13,7 +14,7 @@ class DataTemplate:
 
     def __init__(self, fmt: str, length: int, fields: List[Field],
                  index: List[int], source_uptime: int):
-        self._fmt = fmt
+        self._fmt = struct.Struct(fmt)
         self.fields = fields
         self.index = index
         self.length = length
