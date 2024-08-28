@@ -73,10 +73,10 @@ async def check_ipflow(
         # some of these can vary per flow
         # find out if we should make list metrics or apply other aggregations
         item['protocol'] = f.values[f.template.index.index(4)]
-        item['src_tos'] = f.values[f.template.index.index(5)] \
+        item['tos'] = f.values[f.template.index.index(5)] \
             if 5 in f.template.index else None
         item['tcp_flags'] = f.values[f.template.index.index(6)] \
-            if 5 in f.template.index else None
+            if 6 in f.template.index else None
         item['input_snmp'] = f.values[f.template.index.index(10)] \
             if 10 in f.template.index else None
         item['output_snmp'] = f.values[f.template.index.index(14)] \
