@@ -8,7 +8,7 @@ HEADER_FMT = '>HHLLLLBBH'
 HEADER_SIZE = struct.calcsize(HEADER_FMT)
 
 
-def on_packet_v5(line: bytes):
+def on_packet_v5(line: bytes, source: str):
     (
         version,
         count,
@@ -23,13 +23,9 @@ def on_packet_v5(line: bytes):
 
     flowset_size = V5_TEMPLATE_SIZE
     pos = HEADER_SIZE
-    for _ in range(count):
-        flowset = line[pos:pos+flowset_size]
-        pos += flowset_size
-
-        try:
-            for flow in on_flowset(flowset, *V5_TEMPLATE_KEY):
-                yield flow
-        except Exception:
-            logging.warning('failed to parse FlowSet')
-            break
+    try:
+        for flow in on_flowset(line, pos, pos + flowset_size * count,
+                               *V5_TEMPLATE_KEY):
+            yield flow
+    except Exception:
+        logging.warning('failed to parse FlowSet')

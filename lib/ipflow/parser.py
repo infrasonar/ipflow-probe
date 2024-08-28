@@ -43,3 +43,4 @@ def on_packet(line: bytes, source: str):
             except Exception:
                 logging.warning('failed to parse FlowSet')
                 break
+        pos += length
