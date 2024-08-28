@@ -10,7 +10,7 @@ class Field:
     )
 
     def __init__(self, field_id: int, length: int):
-        self._fmt = FIELD_TYPE_FMT.get(field_id, f'{length}s')
+        self._fmt = FIELD_TYPE_FMT.get((field_id, length), f'{length}x')
         self.id = field_id
         self.length = length
 
