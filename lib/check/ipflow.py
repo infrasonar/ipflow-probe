@@ -21,7 +21,7 @@ async def check_ipflow(
         raise IgnoreCheckException
 
     # get current subscription
-    subs = subscriptions.get((asset.id, 'ipflow'))
+    subs = subscriptions.get((asset.id, 'ipflow', address))
     result = subs.result if subs else {}
 
     # re-subscribe
@@ -33,8 +33,8 @@ async def check_ipflow(
             f.values[f.template.index.index(7)],
             str(ipaddress.ip_address(f.values[f.template.index.index(12)])),
             f.values[f.template.index.index(11)],
-            str(ipaddress.ip_address(f.values[f.template.index.index(15)])) \
-                if 15 in f.template.index else None,
+            str(ipaddress.ip_address(f.values[f.template.index.index(15)]))
+            if 15 in f.template.index else None,
             )
         )
     else:
@@ -43,8 +43,8 @@ async def check_ipflow(
             f.values[f.template.index.index(7)],
             str(ipaddress.ip_address(f.values[f.template.index.index(12)])),
             f.values[f.template.index.index(11)],
-            str(ipaddress.ip_address(f.values[f.template.index.index(15)])) \
-                if 15 in f.template.index else None,
+            str(ipaddress.ip_address(f.values[f.template.index.index(15)]))
+            if 15 in f.template.index else None,
             )
         )
 
