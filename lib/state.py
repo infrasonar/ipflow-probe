@@ -18,15 +18,7 @@ def subscribe_check(
     address: Union[IPv4Address, IPv6Address],
 ):
     logging.info(f'subscribe asset `{asset_id}` check `{check_key}`')
-    subscriptions[(asset_id, check_key)] = Subscription.make(address)
-
-
-def unsubscribe_check(
-    asset_id: int,
-    check_key: str
-):
-    logging.info(f'unsubscribe asset `{asset_id}` check `{check_key}`')
-    subscriptions.pop((asset_id, check_key), None)
+    subscriptions[(asset_id, check_key, address)] = Subscription.make(address)
 
 
 def get_host_by_addr(address: str) -> Optional[str]:
