@@ -4,13 +4,13 @@ from .field_type import FieldType
 
 class Field:
     __slots__ = (
-        '_fmt',
+        'fmt',
         'id',
         'length',
     )
 
     def __init__(self, field_id: int, length: int):
-        self._fmt = FIELD_TYPE_FMT.get((field_id, length), f'{length}x')
+        self.fmt = FIELD_TYPE_FMT.get((field_id, length))
         self.id = field_id
         self.length = length
 

@@ -30,11 +30,14 @@ def on_flowset_template(
         ]
 
         pos += 4 + field_count * 4
+
+        # ignored or invalid template fields have no formatter
+        # we use padding and exclude these from index
         flowset_templates[key] = DataTemplate(
-            '>' + ''.join(f._fmt for f in fields),
+            '>' + ''.join(f.fmt or f'{f.length}x' for f in fields),
             sum(f.length for f in fields),
             fields,
-            [f.id for f in fields],
+            [f.id for f in fields if f.fmt],  # index
             source_uptime,
         )
 
@@ -52,4 +55,4 @@ def on_flowset(
     if template:
         # assume 3 padding
         for i in range(pos, pos_end - 3, template.length):
-            yield Flow(template, template._fmt.unpack_from(line, i))
+            yield Flow(template, template.fmt.unpack_from(line, i))

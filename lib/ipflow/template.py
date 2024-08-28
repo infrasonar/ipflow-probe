@@ -5,7 +5,7 @@ from .field import Field
 
 class DataTemplate:
     __slots__ = (
-        '_fmt',
+        'fmt',
         'length',
         'fields',
         'index',
@@ -14,7 +14,7 @@ class DataTemplate:
 
     def __init__(self, fmt: str, length: int, fields: List[Field],
                  index: List[int], source_uptime: int):
-        self._fmt = struct.Struct(fmt)
+        self.fmt = struct.Struct(fmt)
         self.fields = fields
         self.index = index
         self.length = length
