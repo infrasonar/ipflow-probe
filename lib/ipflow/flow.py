@@ -11,7 +11,7 @@ V5_TEMPLATE_FMT = '>4s4s4sHHLLLLHH2sBBB3s4s'
 V5_TEMPLATE_SIZE = struct.calcsize(V5_TEMPLATE_FMT)
 
 DataTemplateKey = Any  # TODO v5 key should should be also tuple[str, int, int]
-flowset_templates: dict[Any, DataTemplate] = {
+flowset_templates: dict[DataTemplateKey, DataTemplate] = {
     V5_TEMPLATE_KEY: DataTemplate(
         V5_TEMPLATE_FMT,
         V5_TEMPLATE_SIZE,
