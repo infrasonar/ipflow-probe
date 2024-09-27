@@ -45,12 +45,13 @@ class ServerProtocol(asyncio.Protocol):
                 subs.on_flow(flow)
 
 
-async def start_server():
+def start_server(loop: asyncio.AbstractEventLoop):
     logging.info('Starting UDP server')
-    loop = asyncio.get_event_loop()
 
-    transport, protocol = await loop.create_datagram_endpoint(
-        ServerProtocol,
-        local_addr=('0.0.0.0', LISTEN_PORT))
+    transport, protocol = loop.run_until_complete(
+        loop.create_datagram_endpoint(
+            ServerProtocol,
+            local_addr=('0.0.0.0', LISTEN_PORT))
+    )
 
     return transport, protocol

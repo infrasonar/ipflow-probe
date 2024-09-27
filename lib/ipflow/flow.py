@@ -1,6 +1,6 @@
 import struct
 from ipaddress import IPv4Address, IPv4Network, IPv6Address, IPv6Network
-from typing import Dict, Iterator, Tuple, Union
+from typing import Iterator, Union, Any
 from .field_type import FIELD_TYPE_FUNC
 from .field_type import FieldType
 from .template import DataTemplate
@@ -10,7 +10,8 @@ V5_TEMPLATE_KEY = None, None, None
 V5_TEMPLATE_FMT = '>4s4s4sHHLLLLHH2sBBB3s4s'
 V5_TEMPLATE_SIZE = struct.calcsize(V5_TEMPLATE_FMT)
 
-flowset_templates: Dict[Tuple[str, int, int], DataTemplate] = {
+DataTemplateKey = Any  # TODO v5 key should should be also tuple[str, int, int]
+flowset_templates: dict[Any, DataTemplate] = {
     V5_TEMPLATE_KEY: DataTemplate(
         V5_TEMPLATE_FMT,
         V5_TEMPLATE_SIZE,
@@ -45,12 +46,16 @@ class Flow:
         'values',
     )
 
-    def __init__(self, template: DataTemplate, values: Tuple[bytes]):
+    def __init__(self, template: DataTemplate, values: tuple[bytes, ...]):
         self.template = template
         self.values = values
 
     def serialize(self) -> dict:
-        fields = self.template.fields
+        '''
+        returns a serialized representation
+        fields without a formatter are omitted from the result
+        '''
+        fields = [f for f in self.template.fields if f.fmt]
         return {
             f.name: FIELD_TYPE_FUNC.get(f.id, lambda val: val)(val)
             for f, val in zip(fields, self.values)
@@ -59,7 +64,7 @@ class Flow:
     def test_address(
         self,
         address: Union[IPv4Address, IPv6Address]
-    ) -> Iterator[Union[IPv4Address, IPv6Address]]:
+    ) -> bool:
         fields_idx = self.template.index
         for ft in (
             FieldType.IPV4_DST_ADDR,
@@ -80,11 +85,12 @@ class Flow:
                 addr = IPv6Address(self.values[fields_idx.index(ft.value)])
                 if addr == address:
                     return True
+        return False
 
     def test_network(
         self,
         network: Union[IPv4Network, IPv6Network]
-    ) -> Iterator[Union[IPv4Network, IPv6Network]]:
+    ) -> Iterator[Union[IPv4Address, IPv6Address]]:
         fields_idx = self.template.index
         for ft in (
             FieldType.IPV4_DST_ADDR,

@@ -1,3 +1,4 @@
+from typing import Union
 from .field_type import FIELD_TYPE_FMT
 from .field_type import FieldType
 
@@ -15,7 +16,7 @@ class Field:
         self.length = length
 
     @property
-    def name(self) -> str:
+    def name(self) -> Union[str, None]:
         # used for serializing flows, unknown fields will be dropped later
         try:
             return FieldType(self.id).name.lower()

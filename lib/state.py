@@ -3,7 +3,7 @@ import socket
 import time
 import logging
 from ipaddress import IPv4Address, IPv6Address
-from typing import Dict, Optional, Tuple, Union
+from typing import Union
 from .subscription import Subscription
 
 
@@ -21,7 +21,7 @@ def subscribe_check(
     subscriptions[(asset_id, check_key, address)] = Subscription.make(address)
 
 
-def get_host_by_addr(address: str) -> Optional[str]:
+def get_host_by_addr(address: str) -> Union[str, None]:
     host, expire_ts = host_lk.get(address, (None, None))
 
     # request new name when no in lookup or aged
@@ -47,5 +47,6 @@ async def cleanup_subscriptions_loop():
         await asyncio.sleep(60)
 
 
-host_lk: Dict[str, Tuple[str, float]] = {}
-subscriptions: Dict[int, Subscription] = {}
+host_lk: dict[str, tuple[Union[str, None], float]] = {}
+subscriptions: dict[tuple[int, str, Union[IPv4Address, IPv6Address]],
+                    Subscription] = {}

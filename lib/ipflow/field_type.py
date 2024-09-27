@@ -35,7 +35,7 @@ class FieldType(Enum):
     # natEvent = 230
 
 
-FIELD_TYPE_FMT = {
+FIELD_TYPE_FMT: dict[tuple[int, int], str] = {
     (1, 4): 'L',
     (1, 8): 'Q',  # also uint64
     (2, 4): 'L',

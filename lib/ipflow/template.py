@@ -1,6 +1,7 @@
 import struct
-from typing import List
+from typing import Union
 from .field import Field
+from .field_type import FieldType
 
 
 class DataTemplate:
@@ -12,8 +13,8 @@ class DataTemplate:
         'source_uptime',
     )
 
-    def __init__(self, fmt: str, length: int, fields: List[Field],
-                 index: List[int], source_uptime: int):
+    def __init__(self, fmt: str, length: int, fields: list[Field],
+                 index: list[Union[int, FieldType, None]], source_uptime: int):
         self.fmt = struct.Struct(fmt)
         self.fields = fields
         self.index = index
