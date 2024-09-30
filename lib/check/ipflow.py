@@ -51,7 +51,7 @@ async def check_ipflow(
     items = []
     for (src, src_port, dst, dst_port, next_hop), g in grouped:
         item = {
-            'name': f'{src}|{src_port}|{dst}|{dst_port}|{next_hop}',
+            'name': f'{src}|{src_port}|{dst}|{dst_port}|{next_hop or ""}',
             'src_host': get_host_by_addr(src),
             'src_addr': src,
             'src_port': src_port,
@@ -59,7 +59,7 @@ async def check_ipflow(
             'dst_addr': dst,
             'dst_port': dst_port,
             'next_hop': next_hop,
-            'next_hop_host': get_host_by_addr(next_hop),
+            'next_hop_host': next_hop and get_host_by_addr(next_hop),
             'in_pkts': 0,
             'in_bytes': 0,
         }
