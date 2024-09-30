@@ -8,14 +8,6 @@ from lib.ipflow.parser_v5 import on_packet_v5
 from .state import subscriptions
 
 LISTEN_PORT = int(os.getenv('LISTEN_PORT', '2055'))
-FORWARD_HOST = os.getenv('FORWARD_HOST', '127.0.0.1')
-FORWARD_PORTS = os.getenv('FORWARD_PORTS')
-FORWARD = [
-    (FORWARD_HOST, pt)
-    for pt in map(int, FORWARD_PORTS.split(','))
-] if FORWARD_PORTS else []
-assert all(0 < pt < 65536 and pt != LISTEN_PORT for _, pt in FORWARD)
-assert len(FORWARD) == len(set(FORWARD))
 
 COMMON_HEADER_FMT = '>HHL'
 COMMON_HEADER_SZ = 8
@@ -26,7 +18,6 @@ class ServerProtocol(asyncio.Protocol):
     def __init__(self):
         super().__init__()
         self.log_unsupported_version = 0
-        self.log_failed_to_forward = set()
 
     def connection_made(self, transport):
         self.transport = transport
@@ -46,14 +37,6 @@ class ServerProtocol(asyncio.Protocol):
                 self.log_unsupported_version += 1
                 logging.warning('unsupported netflow version')
             return
-
-        for dest in FORWARD:
-            try:
-                self.transport.sendto(data, dest)
-            except Exception:
-                if dest not in self.log_failed_to_forward:
-                    self.log_failed_to_forward.add(dest)
-                    logging.warning(f'failed to forward package to {dest}')
 
         # v5 has no templates so could be ignored when no checks are listening
         if version == 5 and not subscriptions:

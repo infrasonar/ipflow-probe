@@ -19,8 +19,6 @@ Variable            | Default                        | Description
 `LOG_COLORIZED`     | `0`                            | Log using colors (`0`=disabled, `1`=enabled).
 `LOG_FMT`           | `%y%m%d %H:%M:%S`              | Log format prefix.
 `LISTEN_PORT`       | `2055`                         | Port to listen to for flow packets
-`FORWARD_HOST`      | `127.0.0.1`                    | Forward UDP traffic to this host (only applicable if FORWARD_PORTS is set).
-`FORWARD_PORTS`     | _none_                         | Forward UDP traffic to these local ports for other listeners (comma separate for multiple ports).
 
 ## Docker build
 
