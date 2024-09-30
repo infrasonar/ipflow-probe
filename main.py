@@ -7,14 +7,13 @@ from lib.version import __version__ as version
 
 
 if __name__ == '__main__':
-    loop = asyncio.new_event_loop()
-    start_server(loop)
-    asyncio.ensure_future(cleanup_subscriptions_loop(), loop=loop)
-
     checks = {
         'ipflow': check_ipflow,
     }
-
     probe = Probe("ipflow", version, checks)
+
+    loop = asyncio.new_event_loop()
+    start_server(loop)
+    asyncio.ensure_future(cleanup_subscriptions_loop(), loop=loop)
 
     probe.start(loop=loop)
