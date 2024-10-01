@@ -1,6 +1,7 @@
 import struct
 from ipaddress import IPv4Address, IPv4Network, IPv6Address, IPv6Network
 from typing import Iterator, Union, Any
+from .field import Field
 from .field_type import FIELD_TYPE_FUNC
 from .field_type import FieldType
 from .template import DataTemplate
@@ -9,32 +10,30 @@ from .template import DataTemplate
 V5_TEMPLATE_KEY = None, None, None
 V5_TEMPLATE_FMT = '>4s4s4sHHLLLLHH2sBBB3s4s'
 V5_TEMPLATE_SIZE = struct.calcsize(V5_TEMPLATE_FMT)
+V5_FIELDS = [
+    Field(FieldType.IPV4_SRC_ADDR.value, 4),
+    Field(FieldType.IPV4_DST_ADDR.value, 4),
+    Field(FieldType.IPV4_NEXT_HOP.value, 4),
+    Field(FieldType.INPUT_SNMP.value, 2),
+    Field(FieldType.OUTPUT_SNMP.value, 2),
+    Field(FieldType.IN_PKTS.value, 4),
+    Field(FieldType.IN_BYTES.value, 4),
+    Field(FieldType.FIRST_SWITCHED.value, 4),
+    Field(FieldType.LAST_SWITCHED.value, 4),
+    Field(FieldType.L4_SRC_PORT.value, 2),
+    Field(FieldType.L4_DST_PORT.value, 2),
+    Field(FieldType.PROTOCOL.value, 1),
+    Field(FieldType.TOS.value, 1),
+    Field(FieldType.TCP_FLAGS.value, 1),
+]
 
 DataTemplateKey = Any  # TODO v5 key should should be also tuple[str, int, int]
 flowset_templates: dict[DataTemplateKey, DataTemplate] = {
     V5_TEMPLATE_KEY: DataTemplate(
         V5_TEMPLATE_FMT,
         V5_TEMPLATE_SIZE,
-        [],
-        [
-            FieldType.IPV4_SRC_ADDR,
-            FieldType.IPV4_DST_ADDR,
-            FieldType.IPV4_NEXT_HOP,
-            FieldType.INPUT_SNMP,
-            FieldType.OUTPUT_SNMP,
-            FieldType.IN_PKTS,
-            FieldType.IN_BYTES,
-            FieldType.FIRST_SWITCHED,
-            FieldType.LAST_SWITCHED,
-            FieldType.L4_SRC_PORT,
-            FieldType.L4_DST_PORT,
-            None,  # 1 byte padding
-            FieldType.PROTOCOL,
-            FieldType.TOS,
-            FieldType.TCP_FLAGS,
-            None,  # 3 byte padding
-            None,  # reserved
-        ],
+        V5_FIELDS,
+        [f.id for f in V5_FIELDS],
         0,  # uptime not used for v5 packets
     )
 }
