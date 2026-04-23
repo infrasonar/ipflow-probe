@@ -3,7 +3,6 @@ import socket
 import time
 import logging
 from ipaddress import IPv4Address, IPv6Address
-from typing import Union
 from .subscription import Subscription
 
 
@@ -15,13 +14,13 @@ MAX_HOST_LOOKUP_AGE = 14400
 def subscribe_check(
     asset_id: int,
     check_key: str,
-    address: Union[IPv4Address, IPv6Address],
+    address: IPv4Address | IPv6Address,
 ):
     logging.info(f'subscribe asset `{asset_id}` check `{check_key}`')
     subscriptions[(asset_id, check_key, address)] = Subscription.make(address)
 
 
-def get_host_by_addr(address: str) -> Union[str, None]:
+def get_host_by_addr(address: str) -> str | None:
     host, expire_ts = host_lk.get(address, (None, None))
 
     # request new name when no in lookup or aged
@@ -47,6 +46,6 @@ async def cleanup_subscriptions_loop():
         await asyncio.sleep(60)
 
 
-host_lk: dict[str, tuple[Union[str, None], float]] = {}
-subscriptions: dict[tuple[int, str, Union[IPv4Address, IPv6Address]],
+host_lk: dict[str, tuple[str | None, float]] = {}
+subscriptions: dict[tuple[int, str, IPv4Address | IPv6Address],
                     Subscription] = {}

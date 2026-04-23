@@ -13,7 +13,7 @@ COMMON_HEADER_FMT = '>HHL'
 COMMON_HEADER_SZ = 8
 
 
-class ServerProtocol(asyncio.Protocol):
+class ServerProtocol(asyncio.DatagramProtocol):
 
     def __init__(self):
         super().__init__()
