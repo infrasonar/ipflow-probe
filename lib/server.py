@@ -13,16 +13,16 @@ COMMON_HEADER_FMT = '>HHL'
 COMMON_HEADER_SZ = 8
 
 
-class ServerProtocol(asyncio.Protocol):
+class ServerProtocol(asyncio.DatagramProtocol):
 
     def __init__(self):
         super().__init__()
         self.log_unsupported_version = 0
 
-    def connection_made(self, transport):
+    def connection_made(self, transport: asyncio.DatagramTransport):
         self.transport = transport
 
-    def datagram_received(self, data, addr):
+    def datagram_received(self, data: bytes, addr: tuple[str, int]):
         if len(data) < COMMON_HEADER_SZ:
             return
 

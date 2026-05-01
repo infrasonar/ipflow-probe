@@ -1,4 +1,5 @@
 import struct
+from typing import Union
 from .field import Field
 from .flow import Flow, flowset_templates
 from .template import DataTemplate
@@ -46,9 +47,9 @@ def on_flowset(
     line: bytes,
     pos: int,
     pos_end: int,
-    flowset_id: int,
-    source: str,
-    source_id: int,
+    flowset_id: Union[int, None],
+    source: Union[str, None],
+    source_id: Union[int, None],
 ):
     key = source, source_id, flowset_id
     template = flowset_templates.get(key)

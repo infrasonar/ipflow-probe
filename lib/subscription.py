@@ -1,16 +1,16 @@
 import time
 from ipaddress import IPv4Address, IPv6Address
-from typing import NamedTuple, Union
+from typing import NamedTuple
 from .ipflow.flow import Flow
 
 
 class Subscription(NamedTuple):
-    address: Union[IPv4Address, IPv6Address]
+    address: IPv4Address | IPv6Address
     result: list[Flow]
     timestamp: int
 
     @classmethod
-    def make(cls, address: Union[IPv4Address, IPv6Address]):
+    def make(cls, address: IPv4Address | IPv6Address):
         self = cls(
             address=address,
             result=[],
